@@ -1,0 +1,96 @@
+#0. Входим в консоль джанго
+python manage.py shell
+
+
+#1. Создать двух пользователей (с помощью метода User.objects.create_user).
+from django.contrib.auth.models import User
+user1 = User.objects.create_user("JhonSmith", email="jhon@mail.com", password="123456")
+user1.save()
+user2 = User.objects.create_user("JaneSmith", email="jane@mail.com", password="123456")
+user2.save()
+
+
+#2. Создать два объекта модели Author, связанные с пользователями.
+from news.models import Author
+a1 = Author.objects.create(user=user1)
+a1.save()
+a2 = Author.objects.create(user=user2)
+a2.save()
+
+
+#3. Добавить 4 категории в модель Category.
+from news.models import Category
+c1 = Category.objects.create(category_name='sport')
+c1.save()
+Category.objects.create(category_name='finance').save()
+Category.objects.create(category_name='politics').save()
+Category.objects.create(category_name='world').save()
+
+
+#4. Добавить 2 статьи и 1 новость.
+from news.models import Post
+p1 = Post.objects.create(author=a1, post_type='post', title='Header for post number one', content='Content for post one')
+p1.save()
+p2 = Post.objects.create(author=a1, post_type='post', title='Header for post number two', content='Content for post two')
+p2.save()
+n1 = Post.objects.create(author=a2, post_type='news', title='Header for news number one', content='Content for news one')
+n1.save()
+
+
+#5. Присвоить им категории (как минимум в одной статье/новости должно быть не меньше 2 категорий).
+p1.category.add(Category.objects.get(category_name='world'))
+p1.category.add(Category.objects.get(category_name='finance'))
+p1.save()
+p2.category.add(Category.objects.get(category_name='sport'))
+p2.category.add(Category.objects.get(category_name='politics'))
+p2.save()
+n1.category.add(Category.objects.get(category_name='sport'))
+n1.category.add(Category.objects.get(category_name='finance'))
+n1.save()
+
+
+#6. Создать как минимум 4 комментария к разным объектам модели Post (в каждом объекте должен быть как минимум один комментарий).
+from news.models import Comment
+c1 = Comment.objects.create(post=p1, user=user1, content='Годная статья', rating=0)
+c1.save()
+c2 = Comment.objects.create(post=p1, user=user2, content='Негодная статья', rating=0)
+c2.save()
+c3 = Comment.objects.create(post=p2, user=user1, content='Негодная статья', rating=0)
+c3.save()
+c4 = Comment.objects.create(post=n1, user=user2, content='Годная новость', rating=0)
+c4.save()
+
+
+#7. Применяя функции like() и dislike() к статьям/новостям и комментариям, скорректировать рейтинги этих объектов.
+for i in range(3):
+    p1.like()
+for i in range(5):
+    p2.like()
+for i in range(2):
+    n1.dislike()
+
+for i in range(6):
+    c1.like()
+for i in range(4):
+    c2.dislike()
+for i in range(7):
+    c3.like()
+for i in range(3):
+    c4.dislike()
+
+
+#8. Обновить рейтинги пользователей.
+a1.update_rating()
+a2.update_rating()
+
+#9. Вывести username и рейтинг лучшего пользователя (применяя сортировку и возвращая поля первого объекта).
+Author.objects.all().order_by('-rating').values('user__username', 'rating')
+
+
+#10. Вывести дату добавления, username автора, рейтинг, заголовок и превью лучшей статьи, основываясь на лайках/дислайках к этой статье.
+Post.objects.annotate(models.Sum('comment__rating')).order_by('-comment__rating__sum').values('created', 'author__user__username', 'rating', 'title', 'content')[:1]
+
+
+#11. Вывести все комментарии (дата, пользователь, рейтинг, текст) к этой статье.
+post_id = Post.objects.annotate(models.Sum('comment__rating')).order_by('-comment__rating__sum').values('id')[0]['id']
+Comment.objects.filter(post__id=post_id).values('created', 'user__username', 'rating', 'content')
