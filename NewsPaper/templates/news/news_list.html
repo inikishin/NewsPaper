@@ -1,0 +1,37 @@
+{% extends 'newspaper/layout.html' %}
+
+{% load news_filters %}
+
+{% block title %}
+    News
+{% endblock %}
+
+{% block header %}
+    News
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 mb-5">
+                <h2>Список всех новостей</h2>
+                <h6>на {{ time_now|date:'d-m-Y' }}</h6>
+                <h6>Общее количество записей: {{ newslist|length }}</h6>
+            </div>
+        </div>
+        <div class="row">
+            {% for n in newslist %}
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white"><a class="text-white" href="/news/{{ n.id }}">{{ n.title|censor }}</a></div>
+                        <div class="card-body">
+                            <p class="lead">{{ n.content|truncatewords:20|censor }}</p>
+                            <a class="btn btn-primary" href="/news/{{ n.id }}">Читать далее</a>
+                        </div>
+                        <div class="card-footer">Дата публикации: {{ n.created|date:'d.m.Y' }}</div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

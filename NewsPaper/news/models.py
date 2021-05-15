@@ -45,6 +45,9 @@ class Post(models.Model):
     def preview(self):
         return self.content[:124] + '...'
 
+    def __str__(self):
+        return ' - '.join([self.title, self.content[:124]])
+
 
 class PostCategory(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
