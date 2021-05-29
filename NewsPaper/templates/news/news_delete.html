@@ -1,0 +1,13 @@
+{% extends 'newspaper/layout.html' %}
+
+{% load news_filters %}
+
+{% block title %} Список новостей {% endblock title %}
+
+{% block content %}
+<h2>Вы действительно хотите удалить данную новость?</h2>
+
+<form method="POST">
+    {% csrf_token %}
+    <input type="submit" value="подтвердить"></form>
+{% endblock content %}
