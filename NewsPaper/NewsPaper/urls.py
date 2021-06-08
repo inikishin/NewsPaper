@@ -17,8 +17,13 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.generic.base import RedirectView
 
+from .views import profile, upgrade_me
+
 urlpatterns = [
     path('', RedirectView.as_view(url='/news', permanent=False)),
     path('admin/', admin.site.urls),
     path('news/', include('news.urls')),
+    path('accounts/', include('allauth.urls')),
+    path('accounts/profile/', profile, name='accounts_profile'),
+    path('upgrade/', upgrade_me, name = 'upgrade')
 ]

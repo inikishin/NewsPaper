@@ -4,6 +4,7 @@ from django.views import View
 from django.shortcuts import render
 from django.views.generic import ListView, UpdateView, CreateView, DetailView, DeleteView
 from django.core.paginator import Paginator
+from django.contrib.auth.mixins import PermissionRequiredMixin
 
 from .models import Post, Category
 from .filters import PostFilter
@@ -52,11 +53,13 @@ class NewsSearch(ListView):
                                           queryset=self.get_queryset())
         return context
 
-class NewsCreateView(CreateView):
+class NewsCreateView(PermissionRequiredMixin, CreateView):
+    permission_required = ('news.add_post')
     template_name = 'news/news_create.html'
     form_class = PostForm
 
-class NewsUpdateView(UpdateView):
+class NewsUpdateView(PermissionRequiredMixin, UpdateView):
+    permission_required = ('news.change_post')
     template_name = 'news/news_create.html'
     form_class = PostForm
 

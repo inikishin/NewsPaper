@@ -1,0 +1,17 @@
+{% extends 'newspaper/layout.html' %}
+
+{% block title %}
+    Профиль пользователя
+{% endblock %}
+
+{% block header %}
+    Профиль пользователя
+{% endblock %}
+
+{% block content %}
+    <h2>Имя текущего пользователя: {{ user }}</h2>
+
+    {% if is_not_premium %}
+        <button class="btn btn-danger"><a href="/upgrade/"> Хочу быть автором!</a></button>
+    {% endif %}
+{% endblock %}
