@@ -9,7 +9,7 @@ from django.contrib.auth.models import Group
 @login_required
 def profile(request):
     context = {
-        'is_not_premium': not request.user.groups.filter(name='premium').exists()
+        'is_not_premium': not request.user.groups.filter(name='authors').exists()
     }
     return render(request, template_name="profile.html", context=context);
 

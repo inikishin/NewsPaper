@@ -25,5 +25,5 @@ urlpatterns = [
     path('news/', include('news.urls')),
     path('accounts/', include('allauth.urls')),
     path('accounts/profile/', profile, name='accounts_profile'),
-    path('upgrade/', upgrade_me, name = 'upgrade')
+    path('upgrade/', upgrade_me, name = 'upgrade'),
 ]

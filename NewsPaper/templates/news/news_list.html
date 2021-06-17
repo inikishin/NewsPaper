@@ -20,6 +20,12 @@
                 <h6>При необходимости, можете воспользоваться <a href="search">поиском</a> или добавить <a href="{% url 'news_create' %}">новую</a> <br></h6>
             </div>
         </div>
+        {% if category %}
+                <div>
+                    <h3>Текущая категория {{ category }}</h3>
+                    <button class="btn btn-danger"><a href="/news/category/subscribe/?category={{ category.pk }}">Подписаться</a></button>
+                </div>
+        {% endif %}
         <div class="row">
             {% for n in newslist %}
                 <div class="col-lg-4">

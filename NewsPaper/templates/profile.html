@@ -13,5 +13,7 @@
 
     {% if is_not_premium %}
         <button class="btn btn-danger"><a href="/upgrade/"> Хочу быть автором!</a></button>
+    {% else %}
+        <p>Вы уже автор!</p>
     {% endif %}
 {% endblock %}
