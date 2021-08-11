@@ -17,8 +17,10 @@ from .filters import PostFilter
 from .forms import PostForm
 from .signals import check_max_post_today
 from .tasks import task_send_notification
+import logging
 
 pre_save.connect(check_max_post_today, sender=Post)
+logger = logging.getLogger('django.security')
 
 @login_required
 def subscribe(request):
@@ -37,6 +39,7 @@ def category_view(request, pk):
         'newslist': Post.objects.filter(category=pk),
         'category': Category.objects.get(pk=pk)
     }
+    logger.error(f"Open category_view with pk:{pk}")
     return render(request=request, template_name='news/news_list.html', context=context)
 
 class NewsList(ListView):
