@@ -16,8 +16,11 @@ from django.db.models.signals import pre_save
 from .filters import PostFilter
 from .forms import PostForm
 from .signals import check_max_post_today
+from .tasks import task_send_notification
+import logging
 
 pre_save.connect(check_max_post_today, sender=Post)
+logger = logging.getLogger('django.security')
 
 @login_required
 def subscribe(request):
@@ -36,6 +39,7 @@ def category_view(request, pk):
         'newslist': Post.objects.filter(category=pk),
         'category': Category.objects.get(pk=pk)
     }
+    logger.error(f"Open category_view with pk:{pk}")
     return render(request=request, template_name='news/news_list.html', context=context)
 
 class NewsList(ListView):
@@ -60,10 +64,14 @@ class NewsList(ListView):
         if form.is_valid():
             try:
                 form.save()
-                send_notification(form.cleaned_data['category'],
-                                  request.user.username,
-                                  form.cleaned_data['title'],
-                                  form.cleaned_data['content'])
+                task_send_notification.apply_async(form.cleaned_data['category'],
+                                       request.user.username,
+                                       form.cleaned_data['title'],
+                                       form.cleaned_data['content'])
+                # send_notification(form.cleaned_data['category'],
+                #                   request.user.username,
+                #                   form.cleaned_data['title'],
+                #                   form.cleaned_data['content'])
             except Exception:
                 err = True
 
@@ -100,10 +108,14 @@ class NewsCreateView(PermissionRequiredMixin, CreateView):
         form = self.form_class(request.POST)
         if form.is_valid():
             form.save()
-            send_notification(form.cleaned_data['category'],
-                              request.user.username,
-                              form.cleaned_data['title'],
-                              form.cleaned_data['content'])
+            task_send_notification.apply_async(form.cleaned_data['category'],
+                                               request.user.username,
+                                               form.cleaned_data['title'],
+                                               form.cleaned_data['content'])
+            # send_notification(form.cleaned_data['category'],
+            #                   request.user.username,
+            #                   form.cleaned_data['title'],
+            #                   form.cleaned_data['content'])
 
         return super().get(request, *args, **kwargs)
 
